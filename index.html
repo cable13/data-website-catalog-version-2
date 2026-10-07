@@ -260,6 +260,7 @@
             document.getElementById('filter-venue').addEventListener('change', handleFilters);
 
             fetchLiveSheetData();
+            setInterval(fetchLiveSheetData, 30000);
         }
 
         function initDarkMode() {
