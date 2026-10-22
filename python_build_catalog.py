@@ -641,26 +641,9 @@ if __name__ == "__main__":
     
     print("\n👀 Watching UMBC Google Sheets for live changes every 30 seconds... (Press Ctrl+C to stop)")
     try:
-        while True:
-            time.sleep(30)
-            client = authenticate_google_sheets()
-            if client and LITERATURE_SHEET_ID != "YOUR_LITERATURE_SHEET_ID_HERE":
-                data_dict = {}
-                try:
-                    lit_data = fetch_secure_sheet(client, LITERATURE_SHEET_ID, "lit")
-                    if lit_data: data_dict.update(lit_data)
-                    syl_data = fetch_secure_sheet(client, SYLLABI_SHEET_ID, "syl")
-                    if syl_data: data_dict.update(syl_data)
-                    
-                    curr_json = json.dumps(data_dict)
-                    if curr_json != "{}" and curr_json != last_json:
-                        print("\n🔄 New edit detected in UMBC Google Sheets! Rebuilding index.html...")
-                        output_html = os.path.join(script_folder, "index.html")
-                        with open(output_html, "w", encoding="utf-8") as f:
-                            f.write(html_template.replace("{json_data}", curr_json))
-                        last_json = curr_json
-                        print(f"✅ Website updated successfully at {time.strftime('%I:%M:%S %p')}!")
-                except Exception:
-                    pass
+        if __name__ == "__main__":
+            print("🚀 Starting the Cloud Catalog Builder...")
+            build_site()
+            print("✅ Build complete. Shutting down.")
     except KeyboardInterrupt:
         print("\n⏹️ Stopped watching. Have a great day!")
