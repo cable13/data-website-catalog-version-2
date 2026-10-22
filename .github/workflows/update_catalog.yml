@@ -1,0 +1,44 @@
+name: Auto-Update UMBC Catalog
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs automatically every hour
+  workflow_dispatch: # Allows you to trigger it manually via a button
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install pandas openpyxl gspread google-auth-oauthlib
+
+      - name: Create Secret Files securely
+        run: |
+          echo '${{ secrets.CLIENT_SECRET }}' > client_secret.json
+          echo '${{ secrets.TOKEN_JSON }}' > token.json
+
+      - name: Run Python Script
+        run: python python_build_catalog.py
+
+      - name: Delete Secrets before saving
+        run: |
+          rm client_secret.json
+          rm token.json
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update catalog data" && git push)
